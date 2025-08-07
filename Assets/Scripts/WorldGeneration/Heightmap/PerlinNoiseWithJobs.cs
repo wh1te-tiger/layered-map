@@ -145,7 +145,7 @@ namespace WorldGeneration.Heightmap
             public void Execute(int index)
             {
                 int x = index % Width;
-                int y = index / Width;
+                int y = index / Height;
                 float amplitude = 1f;
                 float frequency = 1f;
                 float noiseHeight = 0f;
