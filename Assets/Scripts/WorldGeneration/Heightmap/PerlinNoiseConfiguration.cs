@@ -35,9 +35,11 @@ namespace WorldGeneration.Heightmap
         [field: SerializeField] public bool UseSmooth { get; private set; }
         
         [Tooltip("Степень размытия по Гауссу.")]
-        [Range(0, 10f)] [field: SerializeField] public float Sigma { get; private set; } = 1f; 
+        [Range(0, 10f)] [field: SerializeField] public float Sigma { get; private set; } = 1f;
+
+        public bool UseJobs;
         
-        protected override float[,] GenerateHeightMap() => PerlinNoise.Generate(this);
+        protected override float[,] GenerateHeightMap() => UseJobs ? PerlinNoiseWithJobs.Generate(this) : PerlinNoise.Generate(this);
 
         protected override int GetConfigHash()
         {
