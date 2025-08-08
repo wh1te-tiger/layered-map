@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 673a871322b14be2bf1497881519d3c5, type: 3}
+  m_Name: Map
+  m_EditorClassIdentifier: 
+  <Heightmap>k__BackingField: {fileID: 11400000, guid: 8585594e1c73fc04fa8fab20da009f87, type: 2}
+  <LayerHeight>k__BackingField: 0.15
+  <CellSize>k__BackingField: 0.25
+  <LayerMaterial>k__BackingField: {fileID: 2100000, guid: 8d95e346013009d40b3d398a75173834, type: 2}
