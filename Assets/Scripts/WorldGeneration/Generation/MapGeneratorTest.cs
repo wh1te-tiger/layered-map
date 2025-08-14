@@ -9,8 +9,6 @@ namespace WorldGeneration.Generation
     {
         public MapConfiguration mapConfiguration; // Ссылка на карту высот
         
-        public bool enableInterpolation = true; // Опция для включения/выключения интерполяции
-
         private Vector3[] _vertices;
         private int[] _triangles;
         private Vector3[] _normals;
@@ -22,6 +20,7 @@ namespace WorldGeneration.Generation
         private float _layerHeightStep;
 
         private readonly Dictionary<Vector3, int> _vertexIndexMap = new(); // Хранит уникальные вершины и их индексы
+        private readonly Dictionary<Vector3Int, int> _vertexIndexMapInt = new(); // Хранит уникальные вершины и их индексы
 
         private void Start()
         {
@@ -46,8 +45,6 @@ namespace WorldGeneration.Generation
             _triangles = new int[maxTriangles];
             _uvs = new Vector2[maxVertices];
             _normals =  new Vector3[maxVertices];
-
-            EdgeVertices.enableInterpolation = enableInterpolation;
 
             for (int layer = 0; layer < heightLevels; layer++)
             {
@@ -108,8 +105,9 @@ namespace WorldGeneration.Generation
             mesh.SetVertices(_vertices, 0, _vertexCount);
             mesh.triangles = _triangles.Take(_triangleCount).ToArray();
             // Вычисляем нормали вручную
-            _normals = CalculateNormals(_vertices, mesh.triangles);
-            mesh.SetNormals(_normals, 0, _vertexCount); // передаём нормали
+            //_normals = CalculateNormals(_vertices, mesh.triangles);
+            //mesh.SetNormals(_normals, 0, _vertexCount); // передаём нормали
+            mesh.RecalculateNormals();
             mesh.SetUVs(0, _uvs, 0, _vertexCount); // Передаём UV-координаты
             mesh.RecalculateBounds();
 
@@ -121,7 +119,7 @@ namespace WorldGeneration.Generation
             // Сбрасываем счётчики
             _vertexCount = 0;
             _triangleCount = 0;
-            _vertexIndexMap.Clear();
+            _vertexIndexMapInt.Clear();
         }
 
         private void AddMarchingSquare(int cellType, int x, int z, float topHeight, float baseHeight, float normalizedThreshold)
@@ -334,7 +332,7 @@ namespace WorldGeneration.Generation
         
         #endregion
 
-        private int GetOrAddVertex(Vector3 vertex, float normalizedLayer)
+        /*private int GetOrAddVertex(Vector3 vertex, float normalizedLayer)
         {
             if (_vertexIndexMap.TryGetValue(vertex, out var index))
             {
@@ -347,6 +345,23 @@ namespace WorldGeneration.Generation
             _uvs[index] = new Vector2(normalizedLayer, 0); // Передаём нормализованное значение слоя через UV
             _vertexIndexMap[vertex] = index;
 
+            return index;
+        }*/
+
+        private int GetOrAddVertex(Vector3 vertex, float normalizedLayer)
+        {
+            var scaleFactor = 100f;
+            var vScaled =  new Vector3Int(Mathf.CeilToInt(vertex.x * scaleFactor),Mathf.CeilToInt(vertex.y * scaleFactor), Mathf.CeilToInt(vertex.z * scaleFactor));
+            if (_vertexIndexMapInt.TryGetValue(vScaled, out var index))
+            {
+                return index;
+            }
+            
+            index = _vertexCount++;
+            _vertices[index] = vertex;
+            _uvs[index] = new Vector2(normalizedLayer, 0);
+            _vertexIndexMapInt[vScaled] = index;
+            
             return index;
         }
         
@@ -402,77 +417,6 @@ namespace WorldGeneration.Generation
                     normals[i] = Vector3.up;
                 }
             }
-        }
-    }
-
-    //  v01  . T .  v11
-    //  .             .
-    //  L             R
-    //  .             .
-    //  v00  . B .  v10
-    public struct EdgeVertices
-    {
-        public Vector3 Left => _left ??= InterpolateEdge(_v00, _v01, _v00Height, _v01Height, _targetHeight);
-        public Vector3 Right => _right ??= InterpolateEdge(_v10, _v11, _v10Height, _v11Height, _targetHeight);
-        public Vector3 Bottom => _bottom ??= InterpolateEdge(_v00, _v10, _v00Height, _v10Height, _targetHeight);
-        public Vector3 Top => _top ??= InterpolateEdge(_v01, _v11, _v01Height, _v11Height, _targetHeight);
-
-        private Vector3? _left;
-        private Vector3? _right;
-        private Vector3? _bottom;
-        private Vector3? _top;
-
-        public static bool enableInterpolation;
-
-        private readonly Vector3 _v00;
-        private readonly Vector3 _v10;
-        private readonly Vector3 _v01;
-        private readonly Vector3 _v11;
-
-        private readonly float _v00Height;
-        private readonly float _v10Height;
-        private readonly float _v01Height;
-        private readonly float _v11Height;
-
-        private readonly float _targetHeight;
-
-
-        public EdgeVertices(Vector3 v00, Vector3 v10, Vector3 v01, Vector3 v11, float v00Height, float v10Height,
-            float v01Height, float v11Height, float targetHeight)
-        {
-            _v00 = v00;
-            _v10 = v10;
-            _v01 = v01;
-            _v11 = v11;
-
-            _v00Height = v00Height;
-            _v10Height = v10Height;
-            _v01Height = v01Height;
-            _v11Height = v11Height;
-
-            // Инициализируем кэшированные значения как null
-            _left = null;
-            _right = null;
-            _bottom = null;
-            _top = null;
-
-            _targetHeight = targetHeight;
-        }
-
-        private static Vector3 InterpolateEdge(Vector3 v1, Vector3 v2, float value1, float value2, float targetValue)
-        {
-            if (!enableInterpolation || Mathf.Approximately(value1, value2))
-            {
-                return (v1 + v2) * 0.5f; // Если высоты равны, возвращаем среднюю точку
-            }
-
-            var t = (targetValue - value1) / (value2 - value1);
-            // Интерполируем только X/Z, сохраняя Y неизменным
-            return new Vector3(
-                Mathf.Lerp(v1.x, v2.x, t),
-                v1.y, 
-                Mathf.Lerp(v1.z, v2.z, t)
-            );
         }
     }
 }

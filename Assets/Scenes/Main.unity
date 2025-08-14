@@ -286,7 +286,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mapConfiguration: {fileID: 11400000, guid: 0b94db85b6434264083f037189b4792f, type: 2}
-  enableInterpolation: 1
 --- !u!4 &521242802
 Transform:
   m_ObjectHideFlags: 0
