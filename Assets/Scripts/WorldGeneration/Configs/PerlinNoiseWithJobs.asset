@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c182c8aef244d4fa2aa2f872151fffb, type: 3}
   m_Name: PerlinNoiseWithJobs
   m_EditorClassIdentifier: 
-  <Width>k__BackingField: 256
-  <Height>k__BackingField: 256
-  <HeightLevels>k__BackingField: 32
+  <Width>k__BackingField: 8
+  <Height>k__BackingField: 8
+  <HeightLevels>k__BackingField: 8
   <UseFalloff>k__BackingField: 1
   <HeightGradient>k__BackingField:
     serializedVersion: 2
@@ -79,4 +79,3 @@ MonoBehaviour:
   <Seed>k__BackingField: 188
   <UseSmooth>k__BackingField: 1
   <Sigma>k__BackingField: 3.88
-  UseJobs: 1

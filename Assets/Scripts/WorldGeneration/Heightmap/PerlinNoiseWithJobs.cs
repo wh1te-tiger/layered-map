@@ -7,7 +7,23 @@ namespace WorldGeneration.Heightmap
 {
     public static class PerlinNoiseWithJobs
     {
-        public static float[,] Generate(PerlinNoiseConfiguration config)
+        public static float[] Generate(PerlinNoiseConfiguration config)
+        {
+            var noiseMap = GenerateInternal(config);
+            /*// Конвертируем результат в двумерный массив
+            float[,] result = new float[config.Width, config.Height];
+            for (int y = 0; y < config.Height; y++)
+            {
+                for (int x = 0; x < config.Width; x++)
+                {
+                    result[x, y] = noiseMap[y * config.Width + x];
+                }
+            }*/
+            
+            return noiseMap;
+        }
+        
+        private static float[] GenerateInternal(PerlinNoiseConfiguration config)
         {
             int width = config.Width;
             int height = config.Height;
@@ -74,7 +90,7 @@ namespace WorldGeneration.Heightmap
             JobHandle normalizeHandle = normalizeJob.Schedule(length, 64);
             normalizeHandle.Complete();
             
-             if (config.UseSmooth)
+            if (config.UseSmooth)
             {
                 using (NativeArray<float> temp = new NativeArray<float>(length, Allocator.TempJob))
                 {
@@ -111,22 +127,14 @@ namespace WorldGeneration.Heightmap
                 }
             }
 
-            // Конвертируем результат в двумерный массив
-            float[,] result = new float[width, height];
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
-                {
-                    result[x, y] = noiseMap[y * width + x];
-                }
-            }
-
+            var res = noiseMap.ToArray();
+            
             // Освобождаем ресурсы
             noiseMap.Dispose();
             octaveOffsets.Dispose();
             curveTexture.Dispose();
 
-            return result;
+            return res;
         }
         
         [BurstCompile]
@@ -296,6 +304,7 @@ namespace WorldGeneration.Heightmap
             }
         }
 
+        [BurstCompile]
         private static void GenerateGaussianKernel(NativeArray<float> kernel, int size, float sigma)
         {
             float sum = 0f;

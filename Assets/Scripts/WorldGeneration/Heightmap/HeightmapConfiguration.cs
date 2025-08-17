@@ -23,24 +23,28 @@ namespace WorldGeneration.Heightmap
         public bool RequiresUpdate => GetConfigHash() != ConfigHash;
         
         [System.NonSerialized] protected Texture2D CachedTexture;
-        [System.NonSerialized] protected float[,] CachedHeightMap;
+        [System.NonSerialized] protected float[] CachedHeightMap;
+        [System.NonSerialized] protected float[,] CachedHeightMapMatrix;
         [System.NonSerialized] protected int ConfigHash;
 
         
-        protected abstract float[,] GenerateHeightMap();
+        protected abstract float[] GenerateHeightMap();
         protected abstract int GetConfigHash();
 
 
-        public float[,] GetHeightMap()
+        public float[] GetHeightMapArray()
         {
-            if (CachedHeightMap == null || RequiresUpdate)
-            {
-                CachedHeightMap = GenerateHeightMap();
-                ConfigHash = GetConfigHash();
-            }
+            SetHeightMapInternal();
 
             return CachedHeightMap;
         }
+
+        public float[,] GetHeightMapMatrix()
+        {
+            SetHeightMapInternal();
+            
+            return CachedHeightMapMatrix;
+        } 
         
         public Texture2D GetHeightMapTexture()
         {
@@ -71,18 +75,41 @@ namespace WorldGeneration.Heightmap
                 };
             }
 
-            GetHeightMap();
-            
-            for (int y = 0; y < Height; y++)
+            GetHeightMapArray();
+
+            for (int index = 0; index < CachedHeightMap.Length; index++)
             {
-                for (int x = 0; x < Width; x++)
-                {
-                    float height = CachedHeightMap[x, y];
-                    CachedTexture.SetPixel(x, y, HeightGradient.Evaluate(height));
-                }
+                int x = index % Width;
+                int y = index / Height;
+                float height = CachedHeightMap[index];
+                CachedTexture.SetPixel(x, y, HeightGradient.Evaluate(height));
             }
 
             CachedTexture.Apply();
+        }
+
+        private void SetHeightMapInternal()
+        {
+            if (CachedHeightMap == null || RequiresUpdate)
+            {
+                CachedHeightMap = GenerateHeightMap();
+                CachedHeightMapMatrix = ArrayToMatrix(CachedHeightMap, Width, Height);
+                ConfigHash = GetConfigHash();
+            }
+        }
+
+        private static float[,] ArrayToMatrix(float[] map, int width, int height)
+        {
+            float[,] res = new float[width, height];
+
+            for (int index = 0; index < map.Length; index++)
+            {
+                var x = index % width;
+                var y = index / height;
+                res[x, y] = map[index];
+            }
+            
+            return res;
         }
     }
 }

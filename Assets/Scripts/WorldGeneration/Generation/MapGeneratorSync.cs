@@ -5,10 +5,11 @@ using UnityEngine;
 
 namespace WorldGeneration.Generation
 {
-    public class MapGeneratorTest : MonoBehaviour
+    public class MapGeneratorSync : IMapGenerator
     {
-        public MapConfiguration mapConfiguration; // Ссылка на карту высот
-        
+        private readonly MapConfiguration _config;
+        private readonly Transform _root;
+
         private Vector3[] _vertices;
         private int[] _triangles;
         private Vector3[] _normals;
@@ -18,23 +19,22 @@ namespace WorldGeneration.Generation
         private int _vertexCount;
         private int _triangleCount;
         private float _layerHeightStep;
-
-        private readonly Dictionary<Vector3, int> _vertexIndexMap = new(); // Хранит уникальные вершины и их индексы
+        
         private readonly Dictionary<Vector3Int, int> _vertexIndexMapInt = new(); // Хранит уникальные вершины и их индексы
 
-        private void Start()
-        {
-            var t = DateTime.Now;
-            GenerateLayeredMap();
-            Debug.Log($"Map creation time: {DateTime.Now - t}");
-        }
 
-        public void GenerateLayeredMap()
+        public MapGeneratorSync(MapConfiguration config, Transform root)
         {
-            float[,] map = mapConfiguration.Heightmap.GetHeightMap();
-            int mapWidth = mapConfiguration.MapWidth;
-            int mapHeight = mapConfiguration.MapHeight;
-            int heightLevels = mapConfiguration.Heightmap.HeightLevels;
+            _config = config;
+            _root = root;
+        }
+        
+        public void GenerateMap()
+        {
+            float[,] map = _config.Heightmap.GetHeightMapMatrix();
+            int mapWidth = _config.MapWidth;
+            int mapHeight = _config.MapHeight;
+            int heightLevels = _config.Heightmap.HeightLevels;
             _layerHeightStep = 1f / heightLevels;
 
             // Предварительное выделение памяти
@@ -48,24 +48,24 @@ namespace WorldGeneration.Generation
 
             for (int layer = 0; layer < heightLevels; layer++)
             {
-                GenerateLayerMesh(map, mapWidth, mapHeight, layer, mapConfiguration.LayerHeight);
+                GenerateLayerMesh(map, mapWidth, mapHeight, layer, _config.LayerHeight);
             }
         }
-
+        
         private void GenerateLayerMesh(float[,] map, int width, int height, int layer, float layerHeight)
         {
             GameObject layerObject = new GameObject($"Layer_{layer}");
-            layerObject.transform.parent = transform;
+            layerObject.transform.parent = _root;
 
             MeshFilter meshFilter = layerObject.AddComponent<MeshFilter>();
             MeshRenderer meshRenderer = layerObject.AddComponent<MeshRenderer>();
 
             // Устанавливаем базовый материал
-            meshRenderer.sharedMaterial = mapConfiguration.LayerMaterial;
-            meshFilter.mesh = GenerateSmoothLayerMeshData(map, width, height, layer, layerHeight);
+            meshRenderer.sharedMaterial = _config.LayerMaterial;
+            meshFilter.mesh = GenerateLayerMeshData(map, width, height, layer, layerHeight);
         }
 
-        private Mesh GenerateSmoothLayerMeshData(float[,] map, int width, int height, int layer, float layerHeight)
+        private Mesh GenerateLayerMeshData(float[,] map, int width, int height, int layer, float layerHeight)
         {
             ClearMeshData();
             Mesh mesh = new Mesh();
@@ -124,8 +124,8 @@ namespace WorldGeneration.Generation
 
         private void AddMarchingSquare(int cellType, int x, int z, float topHeight, float baseHeight, float normalizedThreshold)
         {
-            var heightMap = mapConfiguration.Heightmap.GetHeightMap();
-            var cellSize = mapConfiguration.CellSize;
+            var heightMap = _config.Heightmap.GetHeightMapMatrix();
+            var cellSize = _config.CellSize;
 
             // Вершины клетки
             _cellVertices[0] = new Vector3(x * cellSize, topHeight, z * cellSize);
@@ -331,23 +331,7 @@ namespace WorldGeneration.Generation
         }
         
         #endregion
-
-        /*private int GetOrAddVertex(Vector3 vertex, float normalizedLayer)
-        {
-            if (_vertexIndexMap.TryGetValue(vertex, out var index))
-            {
-                return index;
-            }
-
-            // Добавляем новую вершину
-            index = _vertexCount++;
-            _vertices[index] = vertex;
-            _uvs[index] = new Vector2(normalizedLayer, 0); // Передаём нормализованное значение слоя через UV
-            _vertexIndexMap[vertex] = index;
-
-            return index;
-        }*/
-
+        
         private int GetOrAddVertex(Vector3 vertex, float normalizedLayer)
         {
             var scaleFactor = 100f;
@@ -365,7 +349,7 @@ namespace WorldGeneration.Generation
             return index;
         }
         
-        private Vector3[] CalculateNormals(Vector3[] vertices, int[] triangles)
+        /*private Vector3[] CalculateNormals(Vector3[] vertices, int[] triangles)
         {
             Vector3[] normals = new Vector3[vertices.Length];
             int triangleCount = triangles.Length / 3;
@@ -417,6 +401,6 @@ namespace WorldGeneration.Generation
                     normals[i] = Vector3.up;
                 }
             }
-        }
+        }*/
     }
 }

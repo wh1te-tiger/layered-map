@@ -265,7 +265,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 521242802}
-  - component: {fileID: 521242801}
+  - component: {fileID: 521242803}
   m_Layer: 0
   m_Name: MapGenerator
   m_TagString: Untagged
@@ -273,19 +273,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &521242801
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 521242800}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4c27d773f3a34335ac705492b3e4aead, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mapConfiguration: {fileID: 11400000, guid: 0b94db85b6434264083f037189b4792f, type: 2}
 --- !u!4 &521242802
 Transform:
   m_ObjectHideFlags: 0
@@ -301,6 +288,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &521242803
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 521242800}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4320dba1866419593342515c7acc51f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Config: {fileID: 11400000, guid: 0b94db85b6434264083f037189b4792f, type: 2}
+  GenerationType: 1
 --- !u!1 &1276884978
 GameObject:
   m_ObjectHideFlags: 0
