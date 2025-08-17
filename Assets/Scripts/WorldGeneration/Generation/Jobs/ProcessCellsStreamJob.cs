@@ -10,7 +10,7 @@ namespace WorldGeneration.Generation.Jobs
     {
         // Вход
         [ReadOnly] public NativeArray<GridCell> GridCells;
-        [ReadOnly] public NativeList<int> ActiveCellIndices;
+        [ReadOnly] public NativeArray<int> ActiveCellIndices;
         public float TopHeight;
         public float BaseHeight;
         public float CellSize;
