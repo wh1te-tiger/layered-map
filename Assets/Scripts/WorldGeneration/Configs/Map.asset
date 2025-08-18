@@ -15,4 +15,4 @@ MonoBehaviour:
   <Heightmap>k__BackingField: {fileID: 11400000, guid: 8585594e1c73fc04fa8fab20da009f87, type: 2}
   <LayerHeight>k__BackingField: 0.15
   <CellSize>k__BackingField: 0.25
-  <LayerMaterial>k__BackingField: {fileID: 2100000, guid: 8d95e346013009d40b3d398a75173834, type: 2}
+  <LayerMaterial>k__BackingField: {fileID: 2100000, guid: 40fbc2f2528a31349a5726430231684b, type: 2}

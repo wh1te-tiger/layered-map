@@ -70,7 +70,7 @@ namespace WorldGeneration.Generation.Jobs
             IndexMap.TryAdd(h, newIdx);
 
             pos_VertexBuffer[newIdx] = p;
-            uv0_VertexBuffer[newIdx] = new float2(IsoThreshold, 0);
+            uv0_VertexBuffer[newIdx] = new float2(IsoThreshold);
             return newIdx;
         }
     }
