@@ -143,7 +143,7 @@ namespace WorldGeneration.Generation
                     IB_U16 = ib16,
                     IB_U32 = ib32,
                     UseU16 = useU16,
-                    IndexMap = indexMap,
+                    //IndexMap = indexMap,
                     NextIndex = nextIndex,
                 };
 

@@ -12,7 +12,7 @@ namespace WorldGeneration.Generation.Jobs
         [ReadOnly] public NativeStream.Reader TriangleStreamReader;
         public int ForEachCount;
 
-        public float NormalizedLayer;
+        public float IsoThershold;
 
         // Выход: прямой доступ к MeshData
         [NativeDisableContainerSafetyRestriction] [WriteOnly] public NativeArray<float3> pos_VertexBuffer; // data.GetVertexData<float3>()
@@ -70,7 +70,7 @@ namespace WorldGeneration.Generation.Jobs
             HashToIndex.TryAdd(h, newIdx);
 
             pos_VertexBuffer[newIdx] = p;
-            uv0_VertexBuffer[newIdx] = new float2(NormalizedLayer, 0);
+            uv0_VertexBuffer[newIdx] = new float2(IsoThershold, 0);
             return newIdx;
         }
     }
