@@ -59,8 +59,7 @@ namespace WorldGeneration.Generation
                         NormalizedLayer = layer * layerHeightStep,
                         TriangleStreamWriter = triangleStream.AsWriter()
                     };
-
-                    // Оптимальный размер батча: min(64, активных_ячеек/процессоров)
+                    
                     int batchSize = Mathf.Max(1, Mathf.Min(64, activeCount / (SystemInfo.processorCount * 2)));
                     JobHandle processJobHandle = genJob.Schedule(activeCount, batchSize);
 
@@ -111,7 +110,7 @@ namespace WorldGeneration.Generation
 
                 meshData.SetVertexBufferParams(
                     layerInfo.VertexCount,
-                    new VertexAttributeDescriptor(VertexAttribute.Position, VertexAttributeFormat.Float32, 3, 0),
+                    new VertexAttributeDescriptor(VertexAttribute.Position),
                     new VertexAttributeDescriptor(VertexAttribute.TexCoord0, VertexAttributeFormat.Float32, 2, 1)
                 );
                 var vbPos = meshData.GetVertexData<float3>(0);
@@ -137,7 +136,7 @@ namespace WorldGeneration.Generation
                 {
                     TriangleStreamReader = layerInfo.StreamRef.AsReader(),
                     ForEachCount = layerInfo.ActiveCellsCount,
-                    IsoThershold = layerInfo.Threshold,
+                    IsoThreshold = layerInfo.Threshold,
                     pos_VertexBuffer = vbPos,
                     uv0_VertexBuffer = vbUV0,
                     IB_U16 = ib16,
@@ -197,8 +196,7 @@ namespace WorldGeneration.Generation
                     Width = gridWidth,
                     Cells = cells
                 };
-
-                // Оптимальный размер батча: min(64, активных_ячеек/процессоров)
+                
                 int batchSize = Mathf.Max(1, Mathf.Min(64, cells.Length / (SystemInfo.processorCount * 2)));
                 cellsJob.Schedule(cells.Length, batchSize).Complete();
 
@@ -223,7 +221,7 @@ namespace WorldGeneration.Generation
                     LayerThreshold = threshold,
                     ActiveCellIndices = list.AsParallelWriter()
                 };
-                // Оптимальный размер батча: min(64, активных_ячеек/процессоров)
+                
                 int batchSize = Mathf.Max(1, Mathf.Min(64, list.Length / (SystemInfo.processorCount * 2)));
                 filterJob.Schedule(gridWidth * gridHeight, batchSize).Complete();
                 res = new NativeArray<int>(list.AsArray(), Allocator.TempJob);

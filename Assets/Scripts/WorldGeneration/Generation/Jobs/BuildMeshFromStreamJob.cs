@@ -12,7 +12,7 @@ namespace WorldGeneration.Generation.Jobs
         [ReadOnly] public NativeStream.Reader TriangleStreamReader;
         public int ForEachCount;
 
-        public float NormalizedLayer;
+        public float IsoThreshold;
 
         // Выход: прямой доступ к MeshData
         [NativeDisableContainerSafetyRestriction] [WriteOnly] public NativeArray<float3> pos_VertexBuffer; // data.GetVertexData<float3>()
@@ -23,7 +23,7 @@ namespace WorldGeneration.Generation.Jobs
         public bool UseU16;
 
         // Внутренняя карта: hash -> назначенный индекс
-        public NativeParallelHashMap<int, int> HashToIndex;
+        public NativeParallelHashMap<int, int> IndexMap;
         public NativeReference<int> NextIndex;
 
         public void Execute()
@@ -63,14 +63,14 @@ namespace WorldGeneration.Generation.Jobs
         int GetOrAssign(float3 p)
         {
             int h = p.GetHash();
-            if (HashToIndex.TryGetValue(h, out int idx)) return idx;
+            if (IndexMap.TryGetValue(h, out int idx)) return idx;
 
             int newIdx = NextIndex.Value;
             NextIndex.Value = newIdx + 1;
-            HashToIndex.TryAdd(h, newIdx);
+            IndexMap.TryAdd(h, newIdx);
 
             pos_VertexBuffer[newIdx] = p;
-            uv0_VertexBuffer[newIdx] = new float2(NormalizedLayer, 0);
+            uv0_VertexBuffer[newIdx] = new float2(IsoThreshold, 0);
             return newIdx;
         }
     }
