@@ -15,15 +15,15 @@ namespace WorldGeneration.Generation.Jobs
         
         public void Execute(int index)
         {
-            int x = index % (Width - 1);
-            int z = index / (Width - 1);
+            int x = index % Width;
+            int z = index / Width;
             
-            var v00 = HeightMap[x + z * Width];
-            var v01 = HeightMap[x + 1 + z * Width];
-            var v10 = HeightMap[x + (z + 1) * Width];
-            var v11 = HeightMap[x + 1 + (z + 1) * Width];
+            var v00 = HeightMap[x + z * (Width + 1)];
+            var v10 = HeightMap[x + 1 + z * (Width + 1)];
+            var v01 = HeightMap[x + (z + 1) * (Width + 1)];
+            var v11 = HeightMap[x + 1 + (z + 1) * (Width + 1)];
             
-            Cells[index] = new GridCell(v00, v01, v10, v11, new int2(x,z));
+            Cells[index] = new GridCell(v00, v10, v01, v11, new int2(x,z));
         }
     }
 }

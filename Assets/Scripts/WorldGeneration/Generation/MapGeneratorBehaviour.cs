@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace WorldGeneration.Generation
 {
@@ -22,13 +21,14 @@ namespace WorldGeneration.Generation
                     mapGenerator = new MapGeneratorJobsV1(config, root);
                     break;
                 /*case GenerationType.JobsV2:
-                    mapGenerator =  new MapGeneratorJobsV2(Config, root);
+                    mapGenerator =  new MapGeneratorJobsV2(config, root);
                     break;*/
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            mapGenerator.GenerateMap();
+            
             var t = DateTime.Now;
+            mapGenerator.GenerateMap();
             Debug.Log($"Map creation time: {DateTime.Now - t}");
         }
     }
