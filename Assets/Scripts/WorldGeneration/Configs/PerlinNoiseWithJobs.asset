@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c182c8aef244d4fa2aa2f872151fffb, type: 3}
   m_Name: PerlinNoiseWithJobs
   m_EditorClassIdentifier: 
-  <Width>k__BackingField: 4
-  <Height>k__BackingField: 4
-  <HeightLevels>k__BackingField: 4
+  <Width>k__BackingField: 32
+  <Height>k__BackingField: 32
+  <HeightLevels>k__BackingField: 12
   <UseFalloff>k__BackingField: 1
   <HeightGradient>k__BackingField:
     serializedVersion: 2
@@ -46,12 +46,12 @@ MonoBehaviour:
     m_ColorSpace: 0
     m_NumColorKeys: 8
     m_NumAlphaKeys: 2
-  <NoiseScale>k__BackingField: 6.89
-  <Octaves>k__BackingField: 4
-  <Persistence>k__BackingField: 0.84
-  <Lacunarity>k__BackingField: 0.31
-  <Offset>k__BackingField: {x: -28.49, y: 138.7}
-  <HeightMultiplier>k__BackingField: 2.03
+  <NoiseScale>k__BackingField: 0.14
+  <Octaves>k__BackingField: 18
+  <Persistence>k__BackingField: 1.37
+  <Lacunarity>k__BackingField: 0.2
+  <Offset>k__BackingField: {x: -15.34, y: 136.8}
+  <HeightMultiplier>k__BackingField: 1.63
   <HeightCurve>k__BackingField:
     serializedVersion: 2
     m_Curve:
@@ -76,6 +76,6 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  <Seed>k__BackingField: 122
+  <Seed>k__BackingField: 326
   <UseSmooth>k__BackingField: 1
-  <Sigma>k__BackingField: 2.31
+  <Sigma>k__BackingField: 4.7

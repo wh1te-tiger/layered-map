@@ -233,20 +233,20 @@ namespace WorldGeneration.Generation
 
             return res;
         }
-    }
-
-    struct LayerInfo
-    {
-        public int Index;
-        public float Threshold;
-        public int ActiveCellsCount;
-        public NativeStream StreamRef;
-        public int TrisCount;
-        public int VertexCount;
-
-        public void DisposeTemps()
+        
+        struct LayerInfo
         {
-            StreamRef.Dispose();
+            public int Index;
+            public float Threshold;
+            public int ActiveCellsCount;
+            public NativeStream StreamRef;
+            public int TrisCount;
+            public int VertexCount;
+
+            public void DisposeTemps()
+            {
+                StreamRef.Dispose();
+            }
         }
     }
 }

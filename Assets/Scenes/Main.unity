@@ -301,7 +301,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   config: {fileID: 11400000, guid: 0b94db85b6434264083f037189b4792f, type: 2}
-  generationType: 1
+  generationType: 2
 --- !u!1 &1276884978
 GameObject:
   m_ObjectHideFlags: 0

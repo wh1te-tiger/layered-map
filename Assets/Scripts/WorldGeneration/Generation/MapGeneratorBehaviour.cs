@@ -20,9 +20,9 @@ namespace WorldGeneration.Generation
                 case GenerationType.JobsV1:
                     mapGenerator = new MapGeneratorJobsV1(config, root);
                     break;
-                /*case GenerationType.JobsV2:
+                case GenerationType.JobsV2:
                     mapGenerator =  new MapGeneratorJobsV2(config, root);
-                    break;*/
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -37,6 +37,6 @@ namespace WorldGeneration.Generation
     {
         Base,
         JobsV1,
-        //JobsV2
+        JobsV2
     }
 }
