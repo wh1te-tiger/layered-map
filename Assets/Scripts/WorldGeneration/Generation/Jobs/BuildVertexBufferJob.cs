@@ -72,25 +72,25 @@ namespace WorldGeneration.Generation.Jobs
                         };
                     }
 
-                    /*// --- стенка (верх/низ) ---
-                    int wallFirst = LayerInfo.HSideIndexes[gy * (nodesX - 1) + gx];
-                    if (wallFirst >= 0)
+                    // --- стенка (верх/низ) ---
+                    int sideFirst = LayerInfo.HSideIndexes[gy * (nodesX - 1) + gx];
+                    if (sideFirst >= 0)
                     {
                         float3 p = ComputeEdgeHPosition(gx, gy, out var tEdge);
 
                         // Верх стены
-                        vertexBuffer[wallFirst] = new VertexData
+                        vertexBuffer[sideFirst] = new VertexData
                         {
                             pos = new float3(p.x, topY, p.z),
-                            uv = new float2(tEdge, 0f) // u=доля вдоль ребра, v=0 (верх)
+                            uv = new float2(LayerInfo.Iso, 0f) // u=доля вдоль ребра, v=0 (верх)
                         };
                         // Низ стены
-                        vertexBuffer[wallFirst + 1] = new VertexData
+                        vertexBuffer[sideFirst + 1] = new VertexData
                         {
                             pos = new float3(p.x, bottomY, p.z),
-                            uv = new float2(tEdge, 1f) // v=1 (низ)
+                            uv = new float2(LayerInfo.Iso, 1f) // v=1 (низ)
                         };
-                    }*/
+                    }
                 }
             }
 
@@ -113,23 +113,23 @@ namespace WorldGeneration.Generation.Jobs
                         };
                     }
 
-                    /*// --- стенка (верх/низ) ---
-                    int wallFirst = LayerInfo.VSideIndexes[gy * nodesX + gx];
-                    if (wallFirst >= 0)
+                    // --- стенка (верх/низ) ---
+                    int sideFirst = LayerInfo.VSideIndexes[gy * nodesX + gx];
+                    if (sideFirst >= 0)
                     {
                         float3 p = ComputeEdgeVPosition(gx, gy, out var tEdge);
 
-                        vertexBuffer[wallFirst] = new VertexData
+                        vertexBuffer[sideFirst] = new VertexData
                         {
                             pos = new float3(p.x, topY, p.z),
-                            uv = new float2(tEdge, 0f)
+                            uv = new float2(LayerInfo.Iso, 0f)
                         };
-                        vertexBuffer[wallFirst + 1] = new VertexData
+                        vertexBuffer[sideFirst + 1] = new VertexData
                         {
                             pos = new float3(p.x, bottomY, p.z),
-                            uv = new float2(tEdge, 1f)
+                            uv = new float2(LayerInfo.Iso, 1f)
                         };
-                    }*/
+                    }
                 }
             }
         }

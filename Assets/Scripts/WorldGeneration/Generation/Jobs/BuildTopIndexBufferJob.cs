@@ -1,4 +1,4 @@
-﻿using Unity.Burst;
+﻿/*using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
@@ -8,22 +8,13 @@ namespace WorldGeneration.Generation.Jobs
     [BurstCompile]
     public struct BuildTopIndexBufferJob : IJobParallelFor
     {
-        // Входные данные по клеткам
         [ReadOnly] public NativeArray<GridCell> Cells;
-
-        // Размеры сетки узлов (nodesX = cellsX+1, nodesY = cellsY+1)
         [ReadOnly] public int nodesX, nodesY;
-
         [ReadOnly] public LayerInfo LayerInfo;
+        [ReadOnly] public bool UseU16;
 
-        [NativeDisableContainerSafetyRestriction] [WriteOnly]
-        public NativeArray<ushort> IB_16;
-
-        [NativeDisableContainerSafetyRestriction] [WriteOnly]
-        public NativeArray<int> IB_32;
-
-        public bool UseU16;
-
+        [NativeDisableContainerSafetyRestriction] [WriteOnly] public NativeArray<ushort> IB_16;
+        [NativeDisableContainerSafetyRestriction] [WriteOnly] public NativeArray<int> IB_32;
 
         public void Execute(int index)
         {
@@ -166,4 +157,4 @@ namespace WorldGeneration.Generation.Jobs
             return LayerInfo.EdgeVTopIndexes[y * nodesX + x];
         }
     }
-}
+}*/

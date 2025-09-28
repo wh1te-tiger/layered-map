@@ -16,9 +16,11 @@ namespace WorldGeneration.Generation.Jobs
         [NativeDisableParallelForRestriction] 
         public NativeArray<byte> cornerFlags;
         [NativeDisableParallelForRestriction]
-        public NativeArray<byte> edgeHTopFlags; // (горизонтальные рёбра)
+        // (горизонтальные рёбра)
+        public NativeArray<byte> edgeHTopFlags; 
         [NativeDisableParallelForRestriction]
-        public NativeArray<byte> edgeVTopFlags; // (вертикальные рёбра)
+        // (вертикальные рёбра)
+        public NativeArray<byte> edgeVTopFlags;
 
         // Флаги вершин боковой поверхности 
         [NativeDisableParallelForRestriction] public NativeArray<byte> hSideFlags;  //   (горизонтальные рёбра) 
@@ -41,12 +43,11 @@ namespace WorldGeneration.Generation.Jobs
 
             // Рёбра, по которым линия уровня пересекает стороны клетки (Left=1,Right=2,Top=4,Bottom=8)
             int edgeMask = MarchingSquaresLookUpTables.EdgeMask[cellType];
-            int edgeCount = Popcount4(edgeMask);
 
             // Стенки: на каждую ПАРУ mid-точек (а это 2 рёбра) — 2 треугольника ⇒ суммарно равно числу рёбер
-            int sideTris = edgeCount;
+            int sideTris = cellType is 0 or 15 ? 0 : 2;
 
-            trisPerCell[i] = topTris ;
+            trisPerCell[i] = topTris + sideTris;
             
             if ((cellType & 1) != 0) SetCorner(x, y);
             if ((cellType & 2) != 0) SetCorner(x + 1, y);

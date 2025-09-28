@@ -45,7 +45,7 @@ namespace WorldGeneration.Generation
                 }
             }
 
-            BuildMeshes(in layerInfos, in gridCells, gridX, gridY, cellSize, worldLayerHeight);
+            BuildMeshes(ref layerInfos, in gridCells, gridX, gridY, cellSize, worldLayerHeight);
 
             foreach (var layerInfo in layerInfos)
             {
@@ -230,7 +230,7 @@ namespace WorldGeneration.Generation
             return res;
         }
 
-        private void BuildMeshes(in NativeList<LayerInfo> layerInfos, in NativeArray<GridCell> gridCells, int gridX,
+        private void BuildMeshes(ref NativeList<LayerInfo> layerInfos, in NativeArray<GridCell> gridCells, int gridX,
             int gridY, float cellSize, float worldLayerHeight)
         {
             int nodeX = gridX + 1;
@@ -242,38 +242,50 @@ namespace WorldGeneration.Generation
                 meshes[i] = new Mesh { name = $"Layer_{layerInfos[i].Index}" };
 
             var meshDataArray = Mesh.AllocateWritableMeshData(layersCount);
-            var buildHandles = new NativeArray<JobHandle>(layersCount, Allocator.TempJob);
 
-            for (int i = 0; i < layerInfos.Length; i++)
+            var vertexData = new NativeArray<VertexData>[layersCount];
+            var ib16 = new NativeArray<ushort>[layersCount];
+            var ib32 = new NativeArray<int>[layersCount];
+            var useU16Flags = new bool[layersCount];
+            
+            for (int i = 0; i < layersCount; i++)
             {
-                var info = layerInfos[i];
+                ref var info = ref layerInfos.ElementAt(i);
                 var meshData = meshDataArray[i];
 
-                // 1: Vertex buffer (интерливинг: Position+UV0)
+                // VertexBuffer
                 meshData.SetVertexBufferParams(
                     info.VertexCount,
                     new VertexAttributeDescriptor(VertexAttribute.Position, VertexAttributeFormat.Float32, 3, 0),
                     new VertexAttributeDescriptor(VertexAttribute.TexCoord0, VertexAttributeFormat.Float32, 2, 0)
                 );
-                var vertexData = meshData.GetVertexData<VertexData>(0);
+                vertexData[i] = meshData.GetVertexData<VertexData>();
 
+                // IndexBuffer
                 bool useU16 = info.VertexCount <= 65535;
+                useU16Flags[i] = useU16;
                 meshData.SetIndexBufferParams(info.IndexCount, useU16 ? IndexFormat.UInt16 : IndexFormat.UInt32);
-                var ib16 = useU16 ? meshData.GetIndexData<ushort>() : default;
-                var ib32 = useU16 ? default : meshData.GetIndexData<int>();
+
                 if (useU16)
                 {
-                    ib32 = new NativeArray<int>(0, Allocator.TempJob);
+                    ib16[i] = meshData.GetIndexData<ushort>();
                 }
                 else
                 {
-                    ib16 = new NativeArray<ushort>(0, Allocator.TempJob);
+                    ib32[i] = meshData.GetIndexData<int>();
                 }
 
                 meshData.subMeshCount = 1;
-                meshData.SetSubMesh(0,
-                    new SubMeshDescriptor(0, info.IndexCount),
+                meshData.SetSubMesh(0, new SubMeshDescriptor(0, info.IndexCount),
                     MeshUpdateFlags.DontRecalculateBounds | MeshUpdateFlags.DontValidateIndices);
+            }
+            
+            var buildHandles = new NativeArray<JobHandle>(layersCount, Allocator.TempJob);
+
+            for (int i = 0; i < layerInfos.Length; i++)
+            {
+                ref var info = ref layerInfos.ElementAt(i);
+                bool useU16 = useU16Flags[i];
 
                 // 2A: заполняем вершинный буфер
                 var vertexBufferJob = new BuildVertexBufferJob
@@ -286,41 +298,36 @@ namespace WorldGeneration.Generation
                     nodesY = nodeY,
 
                     cellSize = cellSize,
-                    topY = (info.Index + 1) * worldLayerHeight, 
-                    bottomY = info.Index * worldLayerHeight, 
+                    topY = (info.Index + 1) * worldLayerHeight,
+                    bottomY = info.Index * worldLayerHeight,
                     LayerInfo = info,
 
-                    vertexBuffer = vertexData
+                    vertexBuffer = vertexData[i]
                 }.Schedule();
-
-                // 2B: индексы (верх)
-                JobHandle topH = new BuildTopIndexBufferJob
-                {
-                    nodesX = nodeX,
-                    nodesY = nodeY,
-                    Cells = gridCells,
-                    LayerInfo = info,
-                    IB_16 = ib16,
-                    IB_32 = ib32,
-                    UseU16 = useU16
-                }.Schedule(gridX * gridY, 128, vertexBufferJob);
                 
-                // 2C: индексы (бок)
-                JobHandle sideH = new BuildSideIndexBufferJob
-                {
-                    NodesX = nodeX,
-                    NodesY = nodeY,
-                    Cells = gridCells,
-                    LayerInfo = info,
-                    IB_16 = ib16,
-                    IB_32 = ib32,
-                    UseU16 = useU16
-                }.Schedule(gridX * gridY, 128, vertexBufferJob);
+                var buildHandle = useU16
+                    ? new BuildIndicesJob_IB16
+                    {
+                        nodesX = gridX + 1, nodesY = gridY + 1,
+                        Cells = gridCells,
+                        LayerInfo = info,
+                        IB_U16 = ib16[i]
+                    }.Schedule(gridX * gridY, 128, vertexBufferJob)
+                    
+                    : new BuildIndicesJob_IB32
+                    {
+                        nodesX = gridX + 1, nodesY = gridY + 1,
+                        Cells = gridCells,
+                        LayerInfo = info,
+                        IB_U32 = ib32[i]
+                    }.Schedule(gridX * gridY, 128, vertexBufferJob);
+                    
 
-                buildHandles[i] = JobHandle.CombineDependencies(topH, sideH);
+                buildHandles[i] = buildHandle;
             }
 
             JobHandle.CombineDependencies(buildHandles).Complete();
+            
             buildHandles.Dispose();
 
             Mesh.ApplyAndDisposeWritableMeshData(
@@ -334,6 +341,7 @@ namespace WorldGeneration.Generation
             for (int i = 0; i < layerInfos.Length; i++)
             {
                 var mesh = meshes[i];
+
                 // bounds лучше задать руками (дёшево и верно):
                 var topHeight = layerInfos[i].Index * worldLayerHeight;
                 var center = new Vector3((gridX) * cellSize * 0.5f, topHeight * 0.5f, (gridY) * cellSize * 0.5f);

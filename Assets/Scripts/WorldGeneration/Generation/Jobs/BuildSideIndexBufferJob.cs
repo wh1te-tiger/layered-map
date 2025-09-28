@@ -1,4 +1,4 @@
-﻿using Unity.Burst;
+﻿/*using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 
@@ -8,16 +8,12 @@ namespace WorldGeneration.Generation.Jobs
     public  struct BuildSideIndexBufferJob : IJobParallelFor
     {
         [ReadOnly] public int NodesX, NodesY;
-
         [ReadOnly] public NativeArray<GridCell> Cells;
-
         [ReadOnly] public LayerInfo LayerInfo;
-
-        // Индекс-буфер (один из них используется по UseU16)
-        [NativeDisableParallelForRestriction] public NativeArray<ushort> IB_16;
-        [NativeDisableParallelForRestriction] public NativeArray<int> IB_32;
         [ReadOnly] public bool UseU16;
-
+        
+        [NativeDisableParallelForRestriction] [WriteOnly] public NativeArray<ushort> IB_16;
+        [NativeDisableParallelForRestriction] [WriteOnly] public NativeArray<int> IB_32;
         public void Execute(int index)
         {
             var cell = Cells[index];
@@ -96,4 +92,4 @@ namespace WorldGeneration.Generation.Jobs
             }
         }
     }
-}
+}*/

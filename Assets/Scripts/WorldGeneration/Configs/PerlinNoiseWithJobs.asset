@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c182c8aef244d4fa2aa2f872151fffb, type: 3}
   m_Name: PerlinNoiseWithJobs
   m_EditorClassIdentifier: 
-  <Width>k__BackingField: 32
-  <Height>k__BackingField: 32
-  <HeightLevels>k__BackingField: 12
+  <Width>k__BackingField: 256
+  <Height>k__BackingField: 256
+  <HeightLevels>k__BackingField: 32
   <UseFalloff>k__BackingField: 1
   <HeightGradient>k__BackingField:
     serializedVersion: 2
@@ -46,12 +46,12 @@ MonoBehaviour:
     m_ColorSpace: 0
     m_NumColorKeys: 8
     m_NumAlphaKeys: 2
-  <NoiseScale>k__BackingField: 0.14
-  <Octaves>k__BackingField: 18
-  <Persistence>k__BackingField: 1.37
+  <NoiseScale>k__BackingField: 0.19
+  <Octaves>k__BackingField: 8
+  <Persistence>k__BackingField: 1.1
   <Lacunarity>k__BackingField: 0.2
   <Offset>k__BackingField: {x: -15.34, y: 136.8}
-  <HeightMultiplier>k__BackingField: 1.63
+  <HeightMultiplier>k__BackingField: 1.61
   <HeightCurve>k__BackingField:
     serializedVersion: 2
     m_Curve:
